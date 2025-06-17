@@ -1,45 +1,38 @@
-
 import streamlit as st
-from PIL import Image, ImageDraw, ImageFont
-import openai
-import io
-import base64
+from PIL import Image, ImageDraw
 
-# Set your OpenAI API Key
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+st.set_page_config(page_title="Posture Analysis", layout="centered")
 
-st.title("🧍‍♂️ AI-Powered Posture Analysis")
+st.title("🧍 Posture Analysis Tool (Simulated)")
+st.write("Upload a side or back posture photo to get simulated results and annotations.")
 
-uploaded_file = st.file_uploader("Upload a patient's posture image (back or side view)", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("📷 Upload Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
     image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+    st.image(image, caption="Original Image", use_column_width=True)
 
-    if st.button("Analyze Posture"):
-        with st.spinner("Analyzing..."):
-            # Convert image to base64
-            buffered = io.BytesIO()
-            image.save(buffered, format="PNG")
-            img_base64 = base64.b64encode(buffered.getvalue()).decode()
+    # Draw annotations
+    draw = ImageDraw.Draw(image)
 
-            # Call OpenAI Vision
-            response = openai.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": 
-                             "You are a posture analysis expert. Look at this image and annotate any visible musculoskeletal issues (e.g., scoliosis, kyphosis, forward head posture, uneven shoulders, dislocated joints). Mark them clearly with arrows or lines and add text annotations."},
-                            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img_base64}"}}
-                        ],
-                    }
-                ],
-                max_tokens=1000,
-            )
+    # Dummy coordinates for simulated issues
+    draw.line((150, 50, 150, 200), fill="red", width=3)
+    draw.text((160, 50), "Elevated Shoulder", fill="red")
 
-            result = response.choices[0].message.content
-            st.markdown("### 🩺 Posture Report")
-            st.write(result)
-            st.success("Analysis complete!")
+    draw.line((200, 300, 250, 400), fill="blue", width=3)
+    draw.text((260, 350), "Possible Scoliosis", fill="blue")
+
+    draw.line((100, 150, 180, 150), fill="green", width=3)
+    draw.text((100, 160), "Forward Head Posture", fill="green")
+
+    st.image(image, caption="🩺 Simulated Posture Annotations", use_column_width=True)
+
+    # Simulated diagnostic text
+    st.markdown("### 📝 Simulated Diagnosis")
+    st.success("""
+- Right shoulder appears elevated
+- Mild spinal curve suggesting scoliosis
+- Forward head posture detected
+- Recommendation: Consult a physiotherapist
+""")
+
