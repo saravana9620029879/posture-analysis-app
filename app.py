@@ -25,7 +25,7 @@ if uploaded_file:
 
             # Call OpenAI Vision
             response = openai.chat.completions.create(
-                model="model="gpt-3.5-turbo",
+                model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "user",
